@@ -2,8 +2,8 @@
 
 ## Установка и запуск
 
-* [Установка и запуск без докера](https://github.com/ruhose73/test-backend/blob/main/docs/CLEAR.MD)
-* [Установка и запуск с докером](https://github.com/ruhose73/test-backend/blob/main/docs/DOCKER.MD)
+* [Установка и запуск без докера](https://github.com/ruhose73/test-backend-nest/blob/master/docs/CLEAR.MD)
+* [Установка и запуск с докером](https://github.com/ruhose73/test-backend-nest/blob/master/docs/DOCKER.MD)
 
 ## Сервера
 
