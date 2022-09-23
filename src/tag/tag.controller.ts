@@ -1,29 +1,48 @@
-import { Body, Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
 import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+} from '@nestjs/common';
+import {
+  ApiBody,
   ApiHeader,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { TagService } from './tag.service';
+import { TagInputDto } from './dto/tagInput.dto';
+import { TagsDto } from './dto/tags.dto';
+import { TagsIdArrayDto } from './dto/tagsIdArray.dto';
+import TagDTO from './dto/tag.dto';
+import { TagWithCreatorDto } from './dto/tagWithCreator.dto';
+import { GetAllTagsDto } from './dto/getAllTags.dto';
 
 @ApiTags(`Теги`)
 @Controller()
 export class TagController {
   constructor(private tagService: TagService) {}
 
-  @ApiOperation({ summary: `Создание пользователя` })
+  @ApiOperation({ summary: `Создание тега` })
   @ApiHeader({
     name: 'authorization',
     description: 'Auth token',
   })
-  @ApiResponse({ status: 200, description: `BAD_REQUEST` })
+  @ApiBody({ type: TagDTO })
+  @ApiResponse({ status: 200, type: TagsDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
   @Post('/tag')
-  createTag() {
-    return this.tagService.createTag();
+  createTag(@Req() req, @Body() tagDto: TagInputDto) {
+    const token = req.headers.authorization.split(' ')[1];
+    return this.tagService.createTag(token, tagDto);
   }
 
   @ApiOperation({ summary: `Получение тега по ID` })
@@ -35,12 +54,12 @@ export class TagController {
     name: 'id',
     description: 'Идентификатор тега',
   })
-  @ApiResponse({ status: 200, description: `BAD_REQUEST` })
+  @ApiResponse({ status: 200, type: TagWithCreatorDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
   @Get('/tag/:id')
-  getTagById() {
-    return this.tagService.getTagById();
+  getTagById(@Param('id') id) {
+    return this.tagService.getTagById(id);
   }
 
   @ApiOperation({ summary: `Обновление тега по ID` })
@@ -52,12 +71,19 @@ export class TagController {
     name: 'id',
     description: 'Идентификатор тега',
   })
-  @ApiResponse({ status: 200, description: `BAD_REQUEST` })
+  @ApiBody({ type: TagDTO })
+  @ApiResponse({ status: 200, type: TagWithCreatorDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
   @Put('/tag/:id')
-  updateTag() {
-    return this.tagService.updateTag();
+  updateTag(@Req() req, @Param('id') id) {
+    const token = req.headers.authorization.split(' ')[1];
+    return this.tagService.updateTag(
+      id,
+      token,
+      { name: req.body.name ? req.body.name : null },
+      { sortorder: req.body.sortOrder ? req.body.sortOrder : null },
+    );
   }
 
   @ApiOperation({ summary: `Удаление тега по ID` })
@@ -69,12 +95,13 @@ export class TagController {
     name: 'id',
     description: 'Идентификатор тега',
   })
-  @ApiResponse({ status: 200, description: `BAD_REQUEST` })
+  @ApiResponse({ status: 201, description: `NO_CONTENT` })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
   @Delete('/tag/:id')
-  deleteTag() {
-    return this.tagService.deleteTag();
+  deleteTag(@Req() req, @Param('id') id) {
+    const token = req.headers.authorization.split(' ')[1];
+    return this.tagService.deleteTag(token, id);
   }
 
   @ApiOperation({ summary: `Получение всех тегов` })
@@ -82,11 +109,20 @@ export class TagController {
     name: 'authorization',
     description: 'Auth token',
   })
-  @ApiResponse({ status: 200, description: `BAD_REQUEST` })
+  @ApiQuery({ name: 'sortByOrder', description: `Сортировка order` })
+  @ApiQuery({ name: 'offset', description: `Сдвиг по элементам` })
+  @ApiQuery({ name: 'sortByName', description: `Сортировка name` })
+  @ApiQuery({ name: 'length', description: `Количество элементов` })
+  @ApiResponse({ status: 200, type: GetAllTagsDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
   @Get('/tag')
-  allTags() {
-    return this.tagService.allTags();
+  allTags(@Req() req) {
+    return this.tagService.allTags({
+      sortByOrder: req.query.sortByOrder == '' ? true : false,
+      offset: req.query.offset ? req.query.offset : 0,
+      sortByName: req.query.sortByName == '' ? true : false,
+      length: req.query.length ? req.query.length : 10,
+    });
   }
 }
