@@ -1,6 +1,27 @@
-import { Body, Controller, Delete, Get, Post, Put, Req } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+  Req,
+} from '@nestjs/common';
+import {
+  ApiBody,
+  ApiHeader,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserService } from './user.service';
+import { CreateUserDto } from '../auth/dto/CreateUser.dto';
+import { GetUserDto } from './dto/getUser.dto';
+import { UserDto } from './dto/user.dto';
+import { TagsIdArrayDto } from '../tag/dto/tagsIdArray.dto';
+import { MyUserTagsDto } from './dto/myUserTags.dto';
 
 @ApiTags(`Пользователи`)
 @Controller()
@@ -8,7 +29,11 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @ApiOperation({ summary: `Получить пользователя (себя)` })
-  @ApiResponse({ status: 200, description: `BAD_REQUEST` })
+  @ApiHeader({
+    name: 'authorization',
+    description: 'Auth token',
+  })
+  @ApiResponse({ status: 200, type: GetUserDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
   @Get('/user')
@@ -17,18 +42,25 @@ export class UserController {
     return this.userService.getUser(token);
   }
 
-  @ApiOperation({ summary: `Получить пользователя (себя)` })
-  @ApiResponse({ status: 200, description: `BAD_REQUEST` })
+  @ApiOperation({ summary: `Создать пользователя` })
+  @ApiHeader({
+    name: 'authorization',
+    description: 'Auth token',
+  })
+  @ApiResponse({ status: 200, type: UserDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
   @Put('/user')
-  putUser(@Req() req) {
-    const token = req.headers.authorization.split(' ')[1];
-    return this.userService.putUser(token);
+  putUser(@Body() userDto: CreateUserDto) {
+    return this.userService.putUser(userDto);
   }
 
-  @ApiOperation({ summary: `Получить пользователя (себя)` })
-  @ApiResponse({ status: 200, description: `BAD_REQUEST` })
+  @ApiOperation({ summary: `Удалить пользователя (себя)` })
+  @ApiHeader({
+    name: 'authorization',
+    description: 'Auth token',
+  })
+  @ApiResponse({ status: 201, description: `NO_CONTENT` })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
   @Delete('/user')
@@ -37,31 +69,48 @@ export class UserController {
     return this.userService.deleteUser(token);
   }
 
-  @ApiOperation({ summary: `Получить пользователя (себя)` })
-  @ApiResponse({ status: 200, description: `BAD_REQUEST` })
+  @ApiOperation({ summary: `Добавить теги к пользователю` })
+  @ApiHeader({
+    name: 'authorization',
+    description: 'Auth token',
+  })
+  @ApiBody({ type: TagsIdArrayDto })
+  @ApiResponse({ status: 200, type: MyUserTagsDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
-  @Delete('user/tag')
-  userTags(@Req() req) {
+  @Post('user/tag')
+  userTags(@Req() req, @Body() tags: Array<number>) {
     const token = req.headers.authorization.split(' ')[1];
-    return this.userService.userTags(token);
+    return this.userService.userTag(token, tags);
   }
 
-  @ApiOperation({ summary: `Получить пользователя (себя)` })
-  @ApiResponse({ status: 200, description: `BAD_REQUEST` })
+  @ApiOperation({ summary: `Удалить тег пользователя` })
+  @ApiHeader({
+    name: 'authorization',
+    description: 'Auth token',
+  })
+  @ApiParam({
+    name: 'id',
+    description: 'Идентификатор тега',
+  })
+  @ApiResponse({ status: 200, type: MyUserTagsDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
   @Delete('/user/tag/:id')
-  deleteTag(@Req() req) {
+  deleteTag(@Req() req, @Param('id') id) {
     const token = req.headers.authorization.split(' ')[1];
-    return this.userService.deleteTag(token);
+    return this.userService.deleteTag(token, id);
   }
 
-  @ApiOperation({ summary: `Получить пользователя (себя)` })
-  @ApiResponse({ status: 200, description: `BAD_REQUEST` })
+  @ApiOperation({ summary: `Получить свои теги` })
+  @ApiHeader({
+    name: 'authorization',
+    description: 'Auth token',
+  })
+  @ApiResponse({ status: 200, type: MyUserTagsDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
-  @Delete('/user/tag/my')
+  @Get('/user/tag/my')
   myTags(@Req() req) {
     const token = req.headers.authorization.split(' ')[1];
     return this.userService.myTags(token);
