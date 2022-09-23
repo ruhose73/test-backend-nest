@@ -1,0 +1,29 @@
+version: '3.0'
+
+services:
+  main: 
+    container_name: main
+    build: 
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - .:/backend
+      - /backend/node_modules
+    ports:
+      - 5000:5000
+      - 9229:9229
+    command: npm run start:dev
+    restart: always
+  postgres:
+    image: postgres:12
+    ports:
+        - "5432:5432"
+    expose:
+        - "5432"
+    hostname: postgres
+    environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: 123456789
+        POSTGRES_DB: test_backend
+    restart: on-failure
