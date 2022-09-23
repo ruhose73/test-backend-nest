@@ -10,6 +10,7 @@ async function start() {
     .setTitle(`Тестовое задание Node Backend Nest`)
     .setDescription(`Документация API`)
     .setVersion(`1.0.0`)
+    .addServer(`${process.env.API_URL}`)
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
