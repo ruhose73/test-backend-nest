@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -25,6 +26,7 @@ import { TagsIdArrayDto } from './dto/tagsIdArray.dto';
 import TagDTO from './dto/tag.dto';
 import { TagWithCreatorDto } from './dto/tagWithCreator.dto';
 import { GetAllTagsDto } from './dto/getAllTags.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth-guard';
 
 @ApiTags(`Теги`)
 @Controller()
@@ -40,6 +42,7 @@ export class TagController {
   @ApiResponse({ status: 200, type: TagsDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
+  @UseGuards(JwtAuthGuard)
   @Post('/tag')
   createTag(@Req() req, @Body() tagDto: TagInputDto) {
     const token = req.headers.authorization.split(' ')[1];
@@ -58,6 +61,7 @@ export class TagController {
   @ApiResponse({ status: 200, type: TagWithCreatorDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
+  @UseGuards(JwtAuthGuard)
   @Get('/tag/:id')
   getTagById(@Param('id') id) {
     return this.tagService.getTagById(id);
@@ -76,6 +80,7 @@ export class TagController {
   @ApiResponse({ status: 200, type: TagWithCreatorDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
+  @UseGuards(JwtAuthGuard)
   @Put('/tag/:id')
   updateTag(@Req() req, @Param('id') id) {
     const token = req.headers.authorization.split(' ')[1];
@@ -99,6 +104,7 @@ export class TagController {
   @ApiResponse({ status: 204, description: `NO_CONTENT` })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
+  @UseGuards(JwtAuthGuard)
   @Delete('/tag/:id')
   @HttpCode(204)
   deleteTag(@Req() req, @Param('id') id) {
@@ -118,6 +124,7 @@ export class TagController {
   @ApiResponse({ status: 200, type: GetAllTagsDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
+  @UseGuards(JwtAuthGuard)
   @Get('/tag')
   allTags(@Req() req) {
     return this.tagService.allTags({

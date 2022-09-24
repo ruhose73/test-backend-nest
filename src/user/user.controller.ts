@@ -7,6 +7,7 @@ import {
   Post,
   Put,
   Req,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -22,6 +23,7 @@ import { GetUserDto } from './dto/getUser.dto';
 import { UserDto } from './dto/user.dto';
 import { TagsIdArrayDto } from '../tag/dto/tagsIdArray.dto';
 import { MyUserTagsDto } from './dto/myUserTags.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth-guard';
 
 @ApiTags(`Пользователи`)
 @Controller()
@@ -36,6 +38,7 @@ export class UserController {
   @ApiResponse({ status: 200, type: GetUserDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
+  @UseGuards(JwtAuthGuard)
   @Get('/user')
   getUser(@Req() req) {
     const token = req.headers.authorization.split(' ')[1];
@@ -50,6 +53,7 @@ export class UserController {
   @ApiResponse({ status: 200, type: UserDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
+  @UseGuards(JwtAuthGuard)
   @Put('/user')
   putUser(@Body() userDto: CreateUserDto) {
     return this.userService.putUser(userDto);
@@ -63,6 +67,7 @@ export class UserController {
   @ApiResponse({ status: 201, description: `NO_CONTENT` })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
+  @UseGuards(JwtAuthGuard)
   @Delete('/user')
   deleteUser(@Req() req) {
     const token = req.headers.authorization.split(' ')[1];
@@ -78,6 +83,7 @@ export class UserController {
   @ApiResponse({ status: 200, type: MyUserTagsDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
+  @UseGuards(JwtAuthGuard)
   @Post('user/tag')
   userTags(@Req() req, @Body() tags: Array<number>) {
     const token = req.headers.authorization.split(' ')[1];
@@ -96,6 +102,7 @@ export class UserController {
   @ApiResponse({ status: 200, type: MyUserTagsDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
+  @UseGuards(JwtAuthGuard)
   @Delete('/user/tag/:id')
   deleteTag(@Req() req, @Param('id') id) {
     const token = req.headers.authorization.split(' ')[1];
@@ -110,6 +117,7 @@ export class UserController {
   @ApiResponse({ status: 200, type: MyUserTagsDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
+  @UseGuards(JwtAuthGuard)
   @Get('/user/tag/my')
   myTags(@Req() req) {
     const token = req.headers.authorization.split(' ')[1];
