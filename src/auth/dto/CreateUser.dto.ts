@@ -7,13 +7,13 @@ export class CreateUserDto {
   @IsEmail({}, { message: 'Некорректный email' })
   email: string;
   @IsString({ message: 'Должно быть строкой' })
-  @Matches(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,15}$/, {
+  @Length(8, 32, { message: 'Пароль не меньше 8 символов' })
+  @Matches(/^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{8,32}$/, {
     message: 'password too weak',
   })
   @ApiProperty({ example: `Misha!234`, description: `Пароль пользователя` })
   password: string;
   @IsString({ message: 'Должно быть строкой' })
-  @Length(8, 32, { message: 'Пароль не меньше 8 символов' })
   @ApiProperty({ example: `ruhose73`, description: `Псевдоним пользователя` })
   nickname: string;
 }
