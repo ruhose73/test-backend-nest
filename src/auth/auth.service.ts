@@ -75,7 +75,12 @@ export class AuthService {
       if (!userData) {
         throw new HttpException('Вы не авторизованы', HttpStatus.UNAUTHORIZED);
       }
-      const token = this.tokenService.generateToken({ userData });
+
+      const user = await this.dataSource.query(
+        'SELECT uid, email, password, nickname FROM users WHERE email = $1',
+        [userData.user[0].email],
+      );
+      const token = this.tokenService.generateToken({ user });
       return token;
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);

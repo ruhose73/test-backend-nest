@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   Post,
   Put,
@@ -95,10 +96,11 @@ export class TagController {
     name: 'id',
     description: 'Идентификатор тега',
   })
-  @ApiResponse({ status: 201, description: `NO_CONTENT` })
+  @ApiResponse({ status: 204, description: `NO_CONTENT` })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
   @Delete('/tag/:id')
+  @HttpCode(204)
   deleteTag(@Req() req, @Param('id') id) {
     const token = req.headers.authorization.split(' ')[1];
     return this.tagService.deleteTag(token, id);

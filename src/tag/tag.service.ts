@@ -68,7 +68,7 @@ export class TagService {
       await this.dataSource.query(
         'UPDATE tags SET name = COALESCE($1, name), sortorder = COALESCE($2, sortorder) ' +
           'WHERE id = $3 AND creator = $4',
-        [name.name, sortorder.sortorder, tagId, userData.uid],
+        [name.name, sortorder.sortorder, tagId, userData.user[0].uid],
       );
       const tagFullInfo = await this.dataSource.query(
         'SELECT tags.id, tags.creator, tags.name, tags.sortOrder, users.nickname, users.uid ' +
@@ -93,7 +93,6 @@ export class TagService {
         'DELETE FROM tags WHERE id = $1 AND creator = $2',
         [tagId, userData.user[0].uid],
       );
-      throw new HttpException('', HttpStatus.NO_CONTENT);
     } catch (e) {
       throw new HttpException(e.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -125,7 +124,7 @@ export class TagService {
       const meta = new MetaDTO({
         offset: inputParams.offset,
         length: inputParams.length,
-        quantity: countTags.rows[0].count,
+        quantity: countTags[0].count,
       });
       return { data, meta };
     } catch (e) {

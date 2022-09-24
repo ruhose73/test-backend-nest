@@ -91,7 +91,7 @@ export class UserService {
         'SELECT id, name, sortorder FROM tags WHERE id = $1',
         [tags.tags[i]],
       );
-      if (!checkTag.rows[0]) {
+      if (!checkTag[0]) {
         throw new HttpException('Тег не найден', HttpStatus.BAD_REQUEST);
       }
       Atomics.store(uint8, i, tags.tags[i]);
@@ -123,8 +123,8 @@ export class UserService {
         [tagId, userData.user[0].uid],
       );
       const tagsFullInfo = await this.dataSource.query(
-        'SELECT id, name, sortorder FROM tags WHERE id = $1 AND creator = $2 ',
-        [tagId, userData.uid],
+        'SELECT id, name, sortorder FROM tags WHERE creator = $1 ',
+        [userData.user[0].uid],
       );
       return tagsFullInfo;
     } catch (e) {
@@ -140,7 +140,7 @@ export class UserService {
         throw new HttpException('Вы не авторизованы', HttpStatus.UNAUTHORIZED);
       }
       const tagsFullInfo = await this.dataSource.query(
-        'SELECT id,name,sortorder FROM tags WHERE creator = $1 RETURNING id, name, sortorder',
+        'SELECT id,name,sortorder FROM tags WHERE creator = $1',
         [userData.user[0].uid],
       );
       return tagsFullInfo;
