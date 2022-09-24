@@ -8,7 +8,7 @@
 папку с бекапом базы данных с помощью `cd migration-pg`
 
 Поместите образ восстановления в контейнер в папку home  
-`docker cp migration-custom.backup test-backend-nest-postgres-1:/home`
+`docker cp migration-custom.backup test-backend-nest_postgres_1:/home`
 
 Запустите CLI контейнера и выполните команду восстановления базы  
 `pg_restore -U postgres -d test_backend /home/migration-custom.backup`
