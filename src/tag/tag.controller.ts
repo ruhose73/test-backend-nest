@@ -9,6 +9,7 @@ import {
   Put,
   Req,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -27,6 +28,7 @@ import TagDTO from './dto/tag.dto';
 import { TagWithCreatorDto } from './dto/tagWithCreator.dto';
 import { GetAllTagsDto } from './dto/getAllTags.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth-guard';
+import { ValidationPipe } from '../pipes/validation.pipe';
 
 @ApiTags(`Теги`)
 @Controller()
@@ -43,6 +45,7 @@ export class TagController {
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
   @UseGuards(JwtAuthGuard)
+  @UsePipes(ValidationPipe)
   @Post('/tag')
   createTag(@Req() req, @Body() tagDto: TagInputDto) {
     const token = req.headers.authorization.split(' ')[1];

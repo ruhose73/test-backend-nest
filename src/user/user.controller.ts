@@ -8,6 +8,7 @@ import {
   Put,
   Req,
   UseGuards,
+  UsePipes,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -24,6 +25,7 @@ import { UserDto } from './dto/user.dto';
 import { TagsIdArrayDto } from '../tag/dto/tagsIdArray.dto';
 import { MyUserTagsDto } from './dto/myUserTags.dto';
 import { JwtAuthGuard } from '../auth/jwt-auth-guard';
+import { ValidationPipe } from '../pipes/validation.pipe';
 
 @ApiTags(`Пользователи`)
 @Controller()
@@ -54,6 +56,7 @@ export class UserController {
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
   @UseGuards(JwtAuthGuard)
+  @UsePipes(ValidationPipe)
   @Put('/user')
   putUser(@Body() userDto: CreateUserDto) {
     return this.userService.putUser(userDto);

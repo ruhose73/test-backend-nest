@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UsePipes } from '@nestjs/common';
 import { CreateUserDto } from './dto/CreateUser.dto';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/LoginUser.dto';
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { TokenDto } from './dto/Token.dto';
+import { ValidationPipe } from '../pipes/validation.pipe';
 
 @ApiTags(`Авторизация`)
 @Controller()
@@ -14,6 +15,7 @@ export class AuthController {
   @ApiResponse({ status: 200, type: TokenDto })
   @ApiResponse({ status: 400, description: `BAD_REQUEST` })
   @ApiResponse({ status: 500, description: `INTERNAL_SERVER_ERROR` })
+  @UsePipes(ValidationPipe)
   @Post('/signin')
   signin(@Body() userDto: CreateUserDto) {
     return this.authService.signin(userDto);
